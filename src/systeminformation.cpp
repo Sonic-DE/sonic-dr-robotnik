@@ -286,8 +286,6 @@ QString SystemInformation::windowSystem() const
         return QStringLiteral("Unknown");
     case KWindowSystem::Platform::X11:
         return QStringLiteral("X11");
-    case KWindowSystem::Platform::Wayland:
-        return QStringLiteral("Wayland");
     }
     return QStringLiteral("Unknown");
 }

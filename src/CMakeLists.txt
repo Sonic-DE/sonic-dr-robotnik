@@ -119,13 +119,19 @@ target_link_libraries(
     qbugzilla
 )
 
-add_subdirectory(systemd)
-add_subdirectory(coredump)
-
-target_sources(DrKonqiInternal PRIVATE coredumpbackend.cpp coredumpbackend.h)
-target_link_libraries(DrKonqiInternal drkonqi-coredump) # needed for logs extraction
-target_link_libraries(DrKonqiInternal drkonqi-coredumpexcavator)
-target_compile_definitions(DrKonqiInternal PRIVATE SYSTEMD_AVAILABLE)
+if(ENABLE_SYSTEMD_COREDUMP)
+    add_subdirectory(systemd)
+    add_subdirectory(coredump)
+    target_sources(DrKonqiInternal PRIVATE coredumpbackend.cpp coredumpbackend.h)
+    target_link_libraries(DrKonqiInternal drkonqi-coredump drkonqi-coredumpexcavator)
+    target_compile_definitions(DrKonqiInternal PRIVATE SYSTEMD_AVAILABLE)
+else()
+    target_sources(DrKonqiInternal PRIVATE
+        systemd/memoryfallback.cpp
+        systemd/memoryfence.h
+        systemd/memorypressure.h
+    )
+endif()
 
 add_executable(drkonqi main.cpp qml/qml.qrc)
 ecm_mark_nongui_executable(drkonqi)
