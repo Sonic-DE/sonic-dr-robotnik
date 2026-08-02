@@ -95,29 +95,13 @@ ecm_set_disabled_deprecation_versions(QT 5.15.2
     KF 5.240
 )
 
-find_package(Systemd 254)
-set_package_properties(Systemd PROPERTIES TYPE REQUIRED PURPOSE "Coredumpd integration.")
-
-find_package(PolkitQt6-1) # This is only used when extracting crashes from coredumpd
-set_package_properties(PolkitQt6-1 PROPERTIES TYPE REQUIRED PURPOSE "Reading kwin_wayland crashes")
-
-find_package(coredumpctl)
-set_package_properties(
-    coredumpctl
-    PROPERTIES
-    TYPE RUNTIME
-    DESCRIPTION "coredumpd CLI. part of systemd"
-    PURPOSE "Required for coredumpd support to work at runtime!"
-)
-
-find_package(flatpak-coredumpctl)
-set_package_properties(
-    flatpak-coredumpctl
-    PROPERTIES
-    TYPE RUNTIME
-    DESCRIPTION "coredumpd CLI wrapper for flatpaks. part of flatpak"
-    PURPOSE "for debugging flatpaks. ONLY skip this if you absolutely cannot run flatpak on your system"
-)
+option(ENABLE_SYSTEMD_COREDUMP "Build optional systemd-coredump integration" OFF)
+if(ENABLE_SYSTEMD_COREDUMP)
+    find_package(Systemd 254 REQUIRED)
+    find_package(PolkitQt6-1 REQUIRED)
+    find_package(coredumpctl)
+    find_package(flatpak-coredumpctl)
+endif()
 
 add_subdirectory(src)
 
