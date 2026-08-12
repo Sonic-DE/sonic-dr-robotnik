@@ -100,7 +100,7 @@ QJsonObject jsonObjectFromKConfigGroup(const KConfigGroup &group)
     if (!metadata[Metadata::KCRASH_KEY].toObject().isEmpty()) {
         return metadata; // already has data
     }
-    if (!dump.exe.endsWith("/kwin_wayland"_L1) && !dump.exe.endsWith("/kwin_x11"_L1)) {
+    if (!dump.exe.endsWith("/kwin_wayland"_L1) && !dump.exe.endsWith("/sonic-win"_L1)) {
         return metadata; // isn't kwin
     }
 
