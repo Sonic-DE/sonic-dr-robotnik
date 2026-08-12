@@ -67,7 +67,7 @@ plasmawallpaperviewer=plasmate|general
 plasmoidviewer=plasmate|general
 
 #KDE Plasma Desktop (KWin)
-kwin_x11=kwin|general
+sonic-win=kwin|general
 kwin_wayland=kwin|general
 kwin_gles=kwin|general
 kwinactive=kwin|general
