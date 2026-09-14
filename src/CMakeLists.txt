@@ -49,7 +49,6 @@ set(drkonqi_SRCS
     statusnotifier.h
     statusnotifier_activationclosetimer.h
     linuxprocmapsparser.h
-    drkonqi_globals.h
     qmlextensions/platformmodel.h
     qmlextensions/reproducibilitymodel.h
     qmlextensions/credentialstore.h
