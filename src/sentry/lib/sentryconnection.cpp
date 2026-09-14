@@ -12,7 +12,11 @@ SentryNetworkReply::SentryNetworkReply(QNetworkReply *reply, QObject *parent)
 
 SentryNetworkReply::~SentryNetworkReply()
 {
-    m_reply->deleteLater();
+    // The connection's QNetworkAccessManager is a member and is destroyed
+    // before QObject deletes the connection's child SentryReply wrappers.
+    if (m_reply) {
+        m_reply->deleteLater();
+    }
 }
 
 QByteArray SentryNetworkReply::readAll()

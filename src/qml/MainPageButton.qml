@@ -12,6 +12,6 @@ import org.kde.drkonqi 1.0
 QQC2.Button {
     Layout.alignment: Qt.AlignHCenter
     icon.width: Kirigami.Units.iconSizes.medium
-    icon.height: icon.width
+    icon.height: Kirigami.Units.iconSizes.medium
     visible: action.visible
 }

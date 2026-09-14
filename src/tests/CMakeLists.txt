@@ -1,5 +1,19 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
+add_executable(drkonqidialogtest drkonqidialogtest.cpp ../qml/qml.qrc)
+target_link_libraries(drkonqidialogtest PRIVATE Qt::Quick Qt::Test DrKonqiInternal)
+# QML singleton instances may only be accessed by one engine. Run each mode in
+# its own process, using exactly the same resources as the production executable.
+foreach(mode normal safer minimal backtrace-only safer-backtrace minimal-backtrace
+             already-restarted own-crash own-safer no-bug-address sentry safer-sentry minimal-sentry)
+    add_test(NAME drkonqidialogtest-${mode} COMMAND drkonqidialogtest testDialog:${mode})
+    set_tests_properties(drkonqidialogtest-${mode} PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software")
+endforeach()
+add_test(NAME drkonqidialogtest-load-failure COMMAND drkonqidialogtest testLoadFailure)
+set_tests_properties(drkonqidialogtest-load-failure PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software")
+
 # Test helper for systeminformationtest
 if(HAVE_UNAME)
     add_executable(lsb_release lsb_release_double.c)
