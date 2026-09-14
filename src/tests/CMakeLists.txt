@@ -30,7 +30,12 @@ ecm_add_tests(gdbbacktracelinetest.cpp LINK_LIBRARIES Qt::Core Qt::Test drkonqi_
 ecm_add_tests(
         linuxprocmapsparsertest.cpp
         statusnotifier_activationclosetimertest.cpp
+        bugreportaddresstest.cpp
     LINK_LIBRARIES Qt::Core Qt::Test DrKonqiInternal)
+
+add_test(NAME bugreportaddresstest-custom-endpoint COMMAND bugreportaddresstest)
+set_tests_properties(bugreportaddresstest-custom-endpoint PROPERTIES
+    ENVIRONMENT "DRKONQI_KDE_BUGZILLA_URL=https://bugs.example.org/")
 
 if(NOT APPLE)
     if(NOT RUBY_EXECTUABLE)
