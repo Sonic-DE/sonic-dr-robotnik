@@ -25,6 +25,7 @@ Kirigami.ScrollablePage {
     actions: [
         Kirigami.Action {
             id: installButton
+            enabled: !CrashedApplication.hasDeletedFiles
             visible: false
             text: i18nc("@action:button", "Install Debug Symbols")
             onTriggered: {

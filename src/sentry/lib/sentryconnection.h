@@ -8,6 +8,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
+#include <QPointer>
 
 // Represents a NetworkReply. Implemented for QNetwork, and testing mocks.
 class SentryReply : public QObject
@@ -48,7 +49,7 @@ public:
     QString errorString() final;
 
 private:
-    QNetworkReply *m_reply;
+    QPointer<QNetworkReply> m_reply;
 };
 
 // A QNetworkAccessManager based connection implementation.
