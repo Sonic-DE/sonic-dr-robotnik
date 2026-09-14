@@ -4,6 +4,7 @@
 #include <QTest>
 
 #include <bugreportaddress.h>
+#include <drkonqi.h>
 
 using namespace Qt::StringLiterals;
 
@@ -67,8 +68,8 @@ private Q_SLOTS:
         QVERIFY(BugReportAddress(u"MAILTO:submit@bugs.kde.org?subject=crash"_s).isKdeBugzilla());
         QVERIFY(BugReportAddress(u"http://bugstest.kde.org/"_s).isKdeBugzilla());
         QVERIFY(BugReportAddress(u"mailto:submit%40bugs.kde.org"_s).isKdeBugzilla());
-        QCOMPARE(static_cast<QString>(BugReportAddress(u"https://invent.kde.org/project/issues"_s)), KDE_BUGZILLA_URL);
-        QCOMPARE(static_cast<QString>(BugReportAddress(KDE_BUGZILLA_URL)), KDE_BUGZILLA_URL);
+        QCOMPARE(static_cast<QString>(BugReportAddress(u"https://invent.kde.org/project/issues"_s)), DrKonqi::kdeBugzillaURL());
+        QCOMPARE(static_cast<QString>(BugReportAddress(DrKonqi::kdeBugzillaURL())), DrKonqi::kdeBugzillaURL());
     }
 };
 
