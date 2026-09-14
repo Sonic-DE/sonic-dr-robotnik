@@ -4,21 +4,24 @@
 
 #include "drkonqidialog.h"
 
+#include <KConfigGroup>
 #include <KLocalizedString>
-#include <KWindowConfig>
+#include <KSharedConfig>
 
+#include <QCoreApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
+#include <cstdlib>
+
 #include "backtracegenerator.h"
 #include "backtraceparser.h"
-#include "backtracewidget.h"
 #include "bugzillaintegration/bugzillalib.h"
 #include "config-drkonqi.h"
 #include "crashedapplication.h"
 #include "debuggermanager.h"
+#include "debugpackageinstaller.h"
 #include "drkonqi.h"
-#include "drkonqiwidgetsdialog.h"
 #include "qmlextensions/credentialstore.h"
 #include "qmlextensions/doctore.h"
 #include "qmlextensions/platformmodel.h"
@@ -27,14 +30,9 @@
 
 void DrKonqiDialog::show(DrKonqiDialog::GoTo to)
 {
-    if (DrKonqi::isSafer() || DrKonqi::minimalMode()) {
-        (new DrKonqiWidgetsDialog(this))->show();
-        return;
-    }
-
     auto engine = new QQmlApplicationEngine(this);
 
-    static auto l10nContext = new KLocalizedContext(engine);
+    auto l10nContext = new KLocalizedContext(engine);
     l10nContext->setTranslationDomain(QStringLiteral(TRANSLATION_DOMAIN));
     engine->rootContext()->setContextObject(l10nContext);
 
@@ -59,14 +57,24 @@ void DrKonqiDialog::show(DrKonqiDialog::GoTo to)
     qmlRegisterUncreatableType<BacktraceParser>("org.kde.drkonqi", 1, 0, "BacktraceParser", QStringLiteral("Cannot create WarningLevel in QML"));
 
     const QUrl mainUrl(QStringLiteral("qrc:/ui/main.qml"));
+    const KConfigGroup config(KSharedConfig::openConfig(), QStringLiteral("General"));
+    engine->setInitialProperties({{QStringLiteral("minimalMode"), DrKonqi::minimalMode()},
+        {QStringLiteral("showOnlyBacktrace"), config.readEntry(QStringLiteral("ShowOnlyBacktrace"), false)}});
+    QObject::connect(
+        engine,
+        &QQmlApplicationEngine::objectCreationFailed,
+        QCoreApplication::instance(),
+        [] {
+            qCritical() << "Failed to load the QML crash dialog.";
+            QCoreApplication::exit(EXIT_FAILURE);
+        },
+        Qt::QueuedConnection);
     QObject::connect(
         engine,
         &QQmlApplicationEngine::objectCreated,
         this,
-        [mainUrl, this, to](QObject *obj, const QUrl &objUrl) {
-            if (!obj && mainUrl == objUrl) {
-                qWarning() << "Failed to load QML dialog, falling back to QWidget.";
-                (new DrKonqiWidgetsDialog(this))->show();
+        [mainUrl, to](QObject* obj, const QUrl& objUrl) {
+            if (!obj || objUrl != mainUrl) {
                 return;
             }
 

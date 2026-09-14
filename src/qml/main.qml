@@ -15,6 +15,9 @@ Kirigami.ApplicationWindow {
     property var bugzilla: reportInterface.bugzilla
     property bool canReport: false // can file a bug report
     property bool canAutoReport: false // can file a sentry report
+    property bool minimalMode: false
+    property bool showOnlyBacktrace: false
+    readonly property bool restrictedMode: DrKonqi.isSafer() || minimalMode
     readonly property bool generatorFailure: BacktraceGenerator.hasAnyFailure
 
     property string canReportText: {
@@ -25,6 +28,16 @@ Kirigami.ApplicationWindow {
             return xi18nc("@info",
                 '<para>You cannot report this error, because <application>%1</application> does not provide a bug reporting address.</para>',
                 CrashedApplication.name);
+        }
+
+        if (restrictedMode) {
+            if (DrKonqi.isSafer()) {
+                return xi18nc("@info",
+`<para>The reporting assistant is disabled because the crash handler dialog was started in safe mode.<nl />
+You can manually report this bug to <link>%1</link> (including the backtrace from the <interface>Developer Information</interface> page.)</para>`,
+                             CrashedApplication.bugReportAddress);
+            }
+            return i18nc("@info", "The reporting assistant is disabled because the crash handler was started in minimal mode. You can still view, copy, and save the crash information.");
         }
 
         if (CrashedApplication.fakeExecutableBaseName === "drkonqi") {
@@ -38,13 +51,6 @@ to the KDE bug tracking system. Do not forget to include
 the backtrace from the <interface>Developer Information</interface>
 page.</para>`,
                         Globals.ownBugzillaUrl);
-        }
-
-        if (DrKonqi.isSafer()) {
-            return xi18nc("@info",
-`<para>The reporting assistant is disabled because the crash handler dialog was started in safe mode.<nl />
-You can manually report this bug to <link>%1</link> (including the backtrace from the <interface>Developer Information</interface> page.)</para>`,
-                        CrashedApplication.bugReportAddress);
         }
 
         if (CrashedApplication.hasDeletedFiles) {
@@ -118,10 +124,40 @@ any side effects.</para>`);
         }
     }
 
-    pageStack.initialPage: MainPage {}
+    Component {
+        id: mainPage
+        MainPage {}
+    }
+    Component {
+        id: developerPage
+        DeveloperPage {}
+    }
+
+    pageStack.initialPage: showOnlyBacktrace ? developerPage : mainPage
     pageStack.defaultColumnWidth: appWindow.width // show single page
 
+    footer: FooterActionBar {
+        visible: appWindow.restrictedMode || appWindow.showOnlyBacktrace
+        actions: [
+            Kirigami.Action {
+                objectName: "restartApplicationAction"
+                text: i18nc("@action:button", "Restart Application")
+                icon.name: "system-reboot"
+                enabled: !CrashedApplication.hasBeenRestarted && CrashedApplication.fakeExecutableBaseName !== "drkonqi"
+                onTriggered: CrashedApplication.restart()
+            },
+            Kirigami.Action {
+                objectName: "closeDialogAction"
+                text: i18nc("@action:button", "Close")
+                icon.name: "window-close"
+                onTriggered: appWindow.close()
+            }
+        ]
+    }
+
     function goToSentry() {
-        pageStack.replace("qrc:/ui/SentryPage.qml")
+        if (!restrictedMode) {
+            pageStack.replace("qrc:/ui/SentryPage.qml")
+        }
     }
 }
