@@ -1,5 +1,9 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
+ecm_add_test(metadataargumentstest.cpp
+    LINK_LIBRARIES Qt::Core Qt::Test drkonqi-core)
+target_include_directories(metadataargumentstest PRIVATE ../core)
+
 add_executable(drkonqidialogtest drkonqidialogtest.cpp ../qml/qml.qrc)
 target_link_libraries(drkonqidialogtest PRIVATE Qt::Quick Qt::Test DrKonqiInternal)
 # QML singleton instances may only be accessed by one engine. Run each mode in
