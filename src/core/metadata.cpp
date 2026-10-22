@@ -74,6 +74,13 @@ namespace Metadata
             continue;
         }
 
+        // The crashed process may be a headless worker (offscreen/minimal), or
+        // use a different display backend. DrKonqi must select its own GUI
+        // platform from the session environment, not inherit the patient's.
+        if (key == QLatin1String("platform")) {
+            continue;
+        }
+
         arguments << QStringLiteral("--%1").arg(key);
         if (value != QLatin1String("true") && value != QLatin1String("false")) { // not a bool value, append as arg
             arguments << value;
