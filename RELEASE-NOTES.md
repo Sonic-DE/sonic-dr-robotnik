@@ -2,9 +2,9 @@
 
 Sonic Dr Robotnik is SonicDE's crash reporter: when an app crashes, it helps you understand what happened and report the problem.
 
-## Unreleased
+## 6.8.2 (2026-11-10)
 
-- The crash reporter window now always opens in a way that suits your current session, instead of copying a display setting from the app that crashed.
+- Behind the scenes: updated the project logo.
 
 ## 6.8.0.1 (2026-10-23)
 
